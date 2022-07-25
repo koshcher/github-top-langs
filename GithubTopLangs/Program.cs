@@ -2,12 +2,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.WebHost.UseKestrel(serverOptions =>
-{
-  serverOptions.ListenAnyIP(4000);
-  serverOptions.ListenAnyIP(4001, listenOptions => listenOptions.UseHttps());
-});
-
 // Enable from any origin
 builder.Services.AddCors(options =>
 {
