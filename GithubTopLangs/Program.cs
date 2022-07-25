@@ -2,6 +2,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+  options.ListenAnyIP(5001); // to listen for incoming http connection on port 5001
+  options.ListenAnyIP(7001, configure => configure.UseHttps()); // to listen for incoming https connection on port 7001
+});
+
 // Enable from any origin
 builder.Services.AddCors(options =>
 {
@@ -11,12 +17,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
-if (app.Environment.IsProduction())
-{
-  var port = Environment.GetEnvironmentVariable("PORT");
-  app.Urls.Add($"http://*:{port}");
-}
 
 if (app.Environment.IsDevelopment())
 {
