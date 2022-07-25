@@ -2,7 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Configuration.AddJsonFile("appsettings.production.json").AddEnvironmentVariables();
+builder.Configuration.AddEnvironmentVariables();
 
 // Enable from any origin
 builder.Services.AddCors(options =>
