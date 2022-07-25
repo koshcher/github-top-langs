@@ -2,10 +2,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.WebHost.ConfigureKestrel(options =>
+builder.WebHost.UseKestrel(serverOptions =>
 {
-  options.ListenAnyIP(5001); // to listen for incoming http connection on port 5001
-  options.ListenAnyIP(7001, configure => configure.UseHttps()); // to listen for incoming https connection on port 7001
+  serverOptions.ListenAnyIP(4000);
+  serverOptions.ListenAnyIP(4001, listenOptions => listenOptions.UseHttps());
 });
 
 // Enable from any origin
