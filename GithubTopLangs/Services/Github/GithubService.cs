@@ -8,9 +8,9 @@ namespace GithubTopLangs.Services.Github
   {
     protected GitHubClient client = new(new ProductHeaderValue("roman-koshchei"));
 
-    public GithubService(IConfiguration config)
+    public GithubService(string token)
     {
-      var tokenAuth = new Credentials(config.GetValue<string>("Github:Token"));
+      var tokenAuth = new Credentials(token);
       client.Credentials = tokenAuth;
     }
 

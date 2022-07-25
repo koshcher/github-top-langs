@@ -14,7 +14,7 @@ namespace GithubTopLangs.Controllers
 
     public LangController(IConfiguration config)
     {
-      github = new(config);
+      github = new(config.GetValue<string>("Github:Token"));
     }
 
     /// <param name="name">github username</param>
