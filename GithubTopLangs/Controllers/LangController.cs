@@ -1,4 +1,5 @@
 ﻿using GithubTopLangs.Models;
+using GithubTopLangs.Services.Caching;
 using GithubTopLangs.Services.Github;
 using GithubTopLangs.Services.Svg;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,12 @@ namespace GithubTopLangs.Controllers
   {
     private GithubService github;
     private SvgService svg = new();
+    private CacheService cache;
 
     public LangController(IConfiguration config)
     {
       github = new(config.GetValue<string>("TOKEN"));
+      cache = CacheService.Instance;
     }
 
     /// <param name="name">github username</param>
@@ -27,18 +30,22 @@ namespace GithubTopLangs.Controllers
     [HttpGet("/user")]
     public async Task<IActionResult> Get(
         string name, string? hide, string? background, string? exclude,
-        bool includePrivate = true, bool includeOrgs = true, bool includeForks = true, int count = 5)
+        bool includePrivate = true, bool includeOrgs = true, bool includeForks = true, int count = 5
+      )
     {
-      // take from query
+      string svgCard = cache.GetCachedSvg(name) ?? svg.FirstAskCard(background ?? "#3c4043");
 
-      IEnumerable<Lang> langs;
+      // make new request
+      Task.Run(async () =>
+      {
+        string[]? hideLangs = hide?.Split(',');
+        string[]? excludeRepos = exclude?.Split(',');
 
-      string[]? hideLangs = hide?.Split(',');
-      string[]? excludeRepos = exclude?.Split(',');
+        IEnumerable<Lang> langs = await github.CountUserLangs(name, count, includeOrgs, includePrivate, includeForks, hideLangs, excludeRepos);
 
-      langs = await github.CountUserLangs(name, count, includeOrgs, includePrivate, includeForks, hideLangs, excludeRepos);
-
-      string svgCard = svg.CardSvg(langs, background ?? "#3c4043");
+        string svgCard = svg.LangCard(langs, background ?? "#3c4043");
+        cache.CacheSvg(name, svgCard);
+      });
 
       return Content(svgCard, "image/svg+xml");
     }
@@ -48,16 +55,18 @@ namespace GithubTopLangs.Controllers
         string name, string? hide, string? background, string? exclude,
         bool includePrivate = true, bool includeForks = true, int count = 5)
     {
-      // take from query
+      string svgCard = cache.GetCachedSvg(name) ?? svg.FirstAskCard(background ?? "#3c4043");
 
-      IEnumerable<Lang> langs;
+      Task.Run(async () =>
+      {
+        string[]? hideLangs = hide?.Split(',');
+        string[]? excludeRepos = exclude?.Split(',');
 
-      string[]? hideLangs = hide?.Split(',');
-      string[]? excludeRepos = exclude?.Split(',');
+        IEnumerable<Lang> langs = await github.CountOrgLangs(name, count, includePrivate, includeForks, hideLangs, excludeRepos);
 
-      langs = await github.CountOrgLangs(name, count, includePrivate, includeForks, hideLangs, excludeRepos);
-
-      string svgCard = svg.CardSvg(langs, background ?? "#3c4043");
+        string svgCard = svg.LangCard(langs, background ?? "#3c4043");
+        cache.CacheSvg(name, svgCard);
+      });
 
       return Content(svgCard, "image/svg+xml");
     }

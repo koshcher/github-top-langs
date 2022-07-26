@@ -42,14 +42,36 @@ namespace GithubTopLangs.Services.Svg
             ";
     }
 
-    public string CardSvg(IEnumerable<Lang> langs, string backgroung)
+    public string FirstAskCard(string background)
+    {
+      int height = 100;
+
+      return $@"
+        <svg width='{width}' height='{height}' xmlns='http://www.w3.org/2000/svg'>
+          {style}
+          <rect width='{width}' height='{height}' fill='{background}' />
+          <g class='bar'>
+            <text>
+              Actions should be meaningful!
+            </text>
+          </g>
+          <g class='persents'>
+            <text>
+              Your request will be chached and showed at next request.
+            </text>
+          </g>
+        </svg>
+      ";
+    }
+
+    public string LangCard(IEnumerable<Lang> langs, string background)
     {
       double height = 70 + Math.Ceiling(langs.Count() / 2.0) * 20;
 
       return $@"
                 <svg width='{width}' height='{height}' xmlns='http://www.w3.org/2000/svg'>
                     {style}
-                    <rect width='{width}' height='{height}' fill='{backgroung}' />
+                    <rect width='{width}' height='{height}' fill='{background}' />
                     <g class='bar'>
                         {LangBar(langs)}
                     </g>
