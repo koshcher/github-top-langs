@@ -1,11 +1,11 @@
 ﻿namespace GithubTopLangs.Models
 {
-  public struct Lang
-  {
-    public string Name;
-    public double Percent;
+    public struct Lang
+    {
+        public string Name;
+        public double Percent;
 
-    public static Dictionary<string, string> Colors = new()
+        public static Dictionary<string, string> Colors = new()
     {
       { "Mercury", "#ff2b2b" },
       { "TypeScript", "#3178c6" },
@@ -206,5 +206,5 @@
       { "Dogescript", "#cca760" },
       { "nesC", "#94B0C7" }
     };
-  }
+    }
 }
